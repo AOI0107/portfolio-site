@@ -1,13 +1,13 @@
 import { useEffect, useReducer } from 'react';
 import axios from 'axios';
-import { requestStates } from '../constants';
 
 import { skillReducer, initialState, actionTypes } from '../reducers/skillReducer';
 
 export const useSkills = () => {
   const [state, dispatch] = useReducer(skillReducer, initialState);
 
-  const fetchReposApi = () => {
+  useEffect(() => {
+    dispatch({ type: actionTypes.fetch });
     axios.get('https://api.github.com/users/AOI0107/repos')
       .then((response) => {
         const languageList = response.data.map(res => res.language)
@@ -17,15 +17,6 @@ export const useSkills = () => {
       .catch(() => {
         dispatch({ type: actionTypes.error });
       });
-  }
-
-  useEffect(() => {
-    if (state.requestState !== requestStates.loading) { return; }
-    fetchReposApi();
-  }, [state.requestState]);
-
-  useEffect(() => {
-    dispatch({ type: actionTypes.fetch });
   }, []);
 
   const generateLanguageCountObj = (allLanguageList) => {
